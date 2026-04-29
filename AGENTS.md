@@ -7,16 +7,18 @@ This file provides guidance to AI agents and contributors working on this Capaci
 Run this before implementing real plugin logic:
 
 ```bash
-bun run init-plugin <plugin-slug> [ClassName] [app.capgo.packageid] [GitHubOrg]
+bun run init-plugin <plugin-slug> [ClassName] [app.capgo.packageid] [GitHubOrg] [android-lang]
 ```
 
 Example:
 
 ```bash
-bun run init-plugin downloader CapacitorDownloader app.capgo.downloader Cap-go
+bun run init-plugin downloader CapacitorDownloader app.capgo.downloader Cap-go kotlin
 ```
 
 This command renames JS/iOS/Android identifiers, package metadata, and native file paths.
+The optional `android-lang` argument defaults to `java`; pass `kotlin` to generate Kotlin Android sources and Gradle setup.
+The 4th argument always remains `GitHubOrg`; pass `Cap-go` as the 4th argument and `kotlin` as the 5th argument when you want the Kotlin Android scaffold with the default org.
 
 Immediately after running it in a generated plugin copy:
 
@@ -24,6 +26,7 @@ Immediately after running it in a generated plugin copy:
    - `git remote set-url origin git@github.com:Cap-go/capacitor-<plugin-slug>.git`
 2. Remove bootstrap-only init script from the generated copy:
    - delete `scripts/init-plugin.sh`
+   - delete `scripts/templates/`
    - remove `"init-plugin"` from `package.json` scripts
 
 ## Public Release Requirements (Mandatory)
@@ -182,7 +185,7 @@ API docs in the README are auto-generated from JSDoc in `src/definitions.ts`. **
 
 ## Common Pitfalls
 
-- Always rename Swift/Java classes and package IDs when creating a new plugin from this template.
-- We only use Java 21 for Android builds.
+- Always rename Swift and Android classes plus package IDs when creating a new plugin from this template.
+- We target JVM 21 for Android builds.
 - `dist/` is regenerated on every build and should never be edited directly.
 - Use Bun for everything. If a command needs a package binary, use `bunx`.

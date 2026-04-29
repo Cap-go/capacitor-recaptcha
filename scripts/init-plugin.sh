@@ -4,16 +4,21 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage:
-  bun run init-plugin <plugin-slug> [ClassName] [package.id] [GitHubOrg]
+  bun run init-plugin <plugin-slug> [ClassName] [package.id] [GitHubOrg] [android-lang]
 
 Arguments:
   plugin-slug   Required, lowercase slug without scope (example: downloader)
   ClassName     Optional, PascalCase plugin class (default from slug)
   package.id    Optional, Android/iOS reverse DNS id (default: app.capgo.<slug>)
   GitHubOrg     Optional, repository org/user (default: Cap-go)
+  android-lang  Optional 5th argument, Android language: java or kotlin (default: java)
+
+Notes:
+  To use Kotlin while keeping the default GitHub org, pass "Cap-go" as the 4th
+  argument and "kotlin" as the 5th argument.
 
 Example:
-  bun run init-plugin downloader CapacitorDownloader app.capgo.downloader Cap-go
+  bun run init-plugin downloader CapacitorDownloader app.capgo.downloader Cap-go kotlin
 USAGE
 }
 
@@ -31,7 +36,32 @@ to_pascal_case() {
   printf '%s' "$out"
 }
 
-if [[ $# -lt 1 || $# -gt 4 ]]; then
+write_kotlin_build_gradle() {
+  copy_kotlin_template \
+    "scripts/templates/kotlin/android/build.gradle.template" \
+    "android/build.gradle"
+}
+
+copy_kotlin_template() {
+  local source="$1"
+  local destination="$2"
+
+  mkdir -p "$(dirname "$destination")"
+  cp "$source" "$destination"
+}
+
+write_kotlin_android_sources() {
+  local template_root="scripts/templates/kotlin/android/src/main/kotlin"
+  local kotlin_dir="android/src/main/kotlin/$package_path"
+  local template_java_dir="android/src/main/java/app/capgo/plugintemplate"
+
+  mkdir -p "$kotlin_dir"
+  rm -rf "$template_java_dir"
+  copy_kotlin_template "$template_root/PluginTemplate.kt.template" "$kotlin_dir/${class_name}.kt"
+  copy_kotlin_template "$template_root/PluginTemplatePlugin.kt.template" "$kotlin_dir/${plugin_class_name}.kt"
+}
+
+if [[ $# -lt 1 || $# -gt 5 ]]; then
   usage
   exit 1
 fi
@@ -40,6 +70,7 @@ slug="$1"
 class_name="${2:-$(to_pascal_case "$slug")}"
 package_id="${3:-app.capgo.${slug//-/_}}"
 github_org="${4:-Cap-go}"
+android_lang="$(printf '%s' "${5:-java}" | tr '[:upper:]' '[:lower:]')"
 
 if [[ ! "$slug" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
   echo "Invalid plugin slug: $slug"
@@ -56,6 +87,12 @@ fi
 if [[ ! "$package_id" =~ ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$ ]]; then
   echo "Invalid package id: $package_id"
   echo "Expected reverse DNS format, for example: app.capgo.downloader"
+  exit 1
+fi
+
+if [[ ! "$android_lang" =~ ^(java|kotlin)$ ]]; then
+  echo "Invalid android language: $android_lang"
+  echo 'Use "java" or "kotlin".'
   exit 1
 fi
 
@@ -125,25 +162,31 @@ if [[ -f "ios/Sources/${plugin_class_name}/PluginTemplatePlugin.swift" ]]; then
   mv "ios/Sources/${plugin_class_name}/PluginTemplatePlugin.swift" "ios/Sources/${plugin_class_name}/${plugin_class_name}.swift"
 fi
 
-if [[ -f "ios/Tests/${plugin_class_name}Tests/PluginTemplatePluginTests.swift" ]]; then
-  mv "ios/Tests/${plugin_class_name}Tests/PluginTemplatePluginTests.swift" "ios/Tests/${plugin_class_name}Tests/${plugin_class_name}Tests.swift"
+if [[ -f "ios/Tests/${plugin_class_name}Tests/PluginTemplateTests.swift" ]]; then
+  mv "ios/Tests/${plugin_class_name}Tests/PluginTemplateTests.swift" "ios/Tests/${plugin_class_name}Tests/${class_name}Tests.swift"
 fi
 
-if [[ -d "android/src/main/java/app/capgo/plugintemplate" ]]; then
-  mkdir -p "android/src/main/java/$(dirname "$package_path")"
-  mv "android/src/main/java/app/capgo/plugintemplate" "android/src/main/java/$package_path"
-fi
+if [[ "$android_lang" == "java" ]]; then
+  if [[ -d "android/src/main/java/app/capgo/plugintemplate" ]]; then
+    mkdir -p "android/src/main/java/$(dirname "$package_path")"
+    mv "android/src/main/java/app/capgo/plugintemplate" "android/src/main/java/$package_path"
+  fi
 
-if [[ -f "android/src/main/java/$package_path/PluginTemplate.java" ]]; then
-  mv "android/src/main/java/$package_path/PluginTemplate.java" "android/src/main/java/$package_path/${class_name}.java"
-fi
+  if [[ -f "android/src/main/java/$package_path/PluginTemplate.java" ]]; then
+    mv "android/src/main/java/$package_path/PluginTemplate.java" "android/src/main/java/$package_path/${class_name}.java"
+  fi
 
-if [[ -f "android/src/main/java/$package_path/PluginTemplatePlugin.java" ]]; then
-  mv "android/src/main/java/$package_path/PluginTemplatePlugin.java" "android/src/main/java/$package_path/${plugin_class_name}.java"
+  if [[ -f "android/src/main/java/$package_path/PluginTemplatePlugin.java" ]]; then
+    mv "android/src/main/java/$package_path/PluginTemplatePlugin.java" "android/src/main/java/$package_path/${plugin_class_name}.java"
+  fi
+else
+  write_kotlin_build_gradle
+  write_kotlin_android_sources
 fi
 
 echo "Template initialized."
 echo "Package: $package_name"
 echo "Class: $class_name"
 echo "Package ID: $package_id"
+echo "Android language: $android_lang"
 echo "Repo URL: $repo_url"

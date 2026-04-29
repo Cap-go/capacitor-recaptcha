@@ -23,7 +23,7 @@
 - [ ] Change git remote away from this template before first push:
   `git remote set-url origin git@github.com:Cap-go/capacitor-{{PLUGIN_SLUG}}.git`
 - [ ] Remove bootstrap-only init script from generated plugin copy:
-  delete `scripts/init-plugin.sh` and remove `"init-plugin"` from `package.json` scripts.
+  delete `scripts/init-plugin.sh`, delete `scripts/templates/`, and remove `"init-plugin"` from `package.json` scripts.
 - [ ] Update the compatibility table for this plugin.
 - [ ] Update `src/definitions.ts` with the real public API and JSDoc.
 - [ ] Run `bun run docgen` and review generated API docs below.
@@ -74,16 +74,21 @@ Policy:
 ```bash
 bun install
 bun run init-plugin your-plugin YourPlugin app.capgo.yourplugin
+# Optional Kotlin Android variant:
+# bun run init-plugin your-plugin YourPlugin app.capgo.yourplugin Cap-go kotlin
 bun run verify
 ```
 
 The `init-plugin` command updates package names, native class names, iOS/Android identifiers, and the local example app wiring.
+It accepts an optional fifth `android-lang` argument and defaults to `java`; pass `kotlin` to generate Kotlin Android sources and Gradle setup.
+To use Kotlin while keeping the default GitHub org, pass `Cap-go` as the 4th argument and `kotlin` as the 5th argument.
 
 After running `init-plugin` in your new plugin copy:
 
 ```bash
 git remote set-url origin git@github.com:Cap-go/capacitor-your-plugin.git
 rm scripts/init-plugin.sh
+rm -rf scripts/templates
 ```
 
 Then remove `"init-plugin"` from the `scripts` section in `package.json` before publishing.
@@ -251,6 +256,7 @@ Echo a string to validate JS &lt;-&gt; native wiring.
 
 --------------------
 
+
 ### getPluginVersion()
 
 ```typescript
@@ -263,7 +269,9 @@ Returns the platform implementation version marker.
 
 --------------------
 
+
 ### Interfaces
+
 
 #### EchoResult
 
@@ -273,6 +281,7 @@ Echo response payload.
 | ----------- | ------------------- | -------------------------------- |
 | **`value`** | <code>string</code> | The same value passed to `echo`. |
 
+
 #### EchoOptions
 
 Input payload for the echo call.
@@ -280,6 +289,7 @@ Input payload for the echo call.
 | Prop        | Type                | Description                                                           |
 | ----------- | ------------------- | --------------------------------------------------------------------- |
 | **`value`** | <code>string</code> | Arbitrary text that should be returned by native/web implementations. |
+
 
 #### PluginVersionResult
 
