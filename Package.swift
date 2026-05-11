@@ -2,27 +2,29 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapgoCapacitorPluginTemplate",
+    name: "CapgoCapacitorRecaptcha",
     platforms: [.iOS(.v15)],
     products: [
         .library(
-            name: "CapgoCapacitorPluginTemplate",
-            targets: ["PluginTemplatePlugin"])
+            name: "CapgoCapacitorRecaptcha",
+            targets: ["RecaptchaPlugin"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0")
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0"),
+        .package(url: "https://github.com/GoogleCloudPlatform/recaptcha-enterprise-mobile-sdk.git", from: "18.9.0")
     ],
     targets: [
         .target(
-            name: "PluginTemplatePlugin",
+            name: "RecaptchaPlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
-                .product(name: "Cordova", package: "capacitor-swift-pm")
+                .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "RecaptchaEnterprise", package: "recaptcha-enterprise-mobile-sdk")
             ],
-            path: "ios/Sources/PluginTemplatePlugin"),
+            path: "ios/Sources/RecaptchaPlugin"),
         .testTarget(
-            name: "PluginTemplatePluginTests",
-            dependencies: ["PluginTemplatePlugin"],
-            path: "ios/Tests/PluginTemplatePluginTests")
+            name: "RecaptchaPluginTests",
+            dependencies: ["RecaptchaPlugin"],
+            path: "ios/Tests/RecaptchaPluginTests")
     ]
 )

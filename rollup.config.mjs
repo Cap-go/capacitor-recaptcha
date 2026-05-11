@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorPluginTemplate',
+      name: 'capacitorRecaptcha',
       globals: {
         '@capacitor/core': 'capacitorExports',
       },

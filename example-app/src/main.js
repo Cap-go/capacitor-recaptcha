@@ -1,19 +1,45 @@
 import './style.css';
-import { PluginTemplate } from '@capgo/capacitor-plugin-template';
+import { Recaptcha } from '@capgo/capacitor-recaptcha';
 
 const output = document.getElementById('plugin-output');
-const echoInput = document.getElementById('echo-value');
-const echoButton = document.getElementById('run-echo');
+const siteKeyInput = document.getElementById('site-key');
+const actionInput = document.getElementById('action-name');
+const enterpriseInput = document.getElementById('enterprise-mode');
+const loadButton = document.getElementById('load-client');
+const executeButton = document.getElementById('execute-action');
 const versionButton = document.getElementById('get-version');
 
 const setOutput = (value) => {
   output.textContent = typeof value === 'string' ? value : JSON.stringify(value, null, 2);
 };
 
-echoButton.addEventListener('click', async () => {
+const getOptions = () => {
+  const siteKey = siteKeyInput.value.trim();
+  return {
+    ...(siteKey ? { siteKey } : {}),
+    enterprise: enterpriseInput.checked,
+  };
+};
+
+loadButton.addEventListener('click', async () => {
   try {
-    const result = await PluginTemplate.echo({ value: echoInput.value });
+    const result = await Recaptcha.load(getOptions());
     setOutput(result);
+  } catch (error) {
+    setOutput(`Error: ${error?.message ?? error}`);
+  }
+});
+
+executeButton.addEventListener('click', async () => {
+  try {
+    const result = await Recaptcha.execute({
+      ...getOptions(),
+      action: actionInput.value.trim(),
+    });
+    setOutput({
+      ...result,
+      token: `${result.token.slice(0, 18)}...`,
+    });
   } catch (error) {
     setOutput(`Error: ${error?.message ?? error}`);
   }
@@ -21,7 +47,7 @@ echoButton.addEventListener('click', async () => {
 
 versionButton.addEventListener('click', async () => {
   try {
-    const result = await PluginTemplate.getPluginVersion();
+    const result = await Recaptcha.getPluginVersion();
     setOutput(result);
   } catch (error) {
     setOutput(`Error: ${error?.message ?? error}`);

@@ -1,237 +1,139 @@
-# @capgo/capacitor-plugin-template
+# @capgo/capacitor-recaptcha
 
-<a href="https://capgo.app/"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-plugin-template" alt="Capgo - Instant updates for Capacitor" /></a>
+<a href="https://capgo.app/"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-recaptcha" alt="Capgo - Instant updates for Capacitor" /></a>
 
 <div align="center">
-  <h2><a href="https://capgo.app/?ref=plugin_{{PLUGIN_REF_SLUG}}"> ➡️ Get Instant updates for your App with Capgo</a></h2>
-  <h2><a href="https://capgo.app/consulting/?ref=plugin_{{PLUGIN_REF_SLUG}}"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
+  <h2><a href="https://capgo.app/?ref=plugin_recaptcha"> ➡️ Get Instant updates for your App with Capgo</a></h2>
+  <h2><a href="https://capgo.app/consulting/?ref=plugin_recaptcha"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
 </div>
 
-> Template README. Replace every `{{PLACEHOLDER}}` value before releasing.
+Capacitor plugin for generating reCAPTCHA tokens on Web, Android, and iOS.
 
-## Snapshot
+It supports:
 
-- **Plugin name:** `{{PLUGIN_DISPLAY_NAME}}`
-- **One-line value:** `{{PLUGIN_TAGLINE}}`
-- **Maintainer:** `{{MAINTAINER_OR_TEAM}}`
-- **Status:** `{{alpha|beta|stable}}`
+- Web reCAPTCHA v3 with `api.js`
+- Web reCAPTCHA Enterprise with `enterprise.js`
+- Android and iOS mobile reCAPTCHA SDKs
 
-## Pre-Release Checklist
-
-- [ ] Replace all `{{PLACEHOLDER}}` values in this README.
-- [ ] Replace `{{PLUGIN_REF_SLUG}}` in Capgo CTA links (example: `native_audio`).
-- [ ] Confirm the README banner image uses `https://capgo.app/readme-banner.svg?repo=<GitHubOrg>/capacitor-{{PLUGIN_SLUG}}`.
-- [ ] Replace all `__AI_KEYWORD_*__` entries in `package.json`.
-- [ ] Change git remote away from this template before first push:
-  `git remote set-url origin git@github.com:Cap-go/capacitor-{{PLUGIN_SLUG}}.git`
-- [ ] Remove bootstrap-only init script from generated plugin copy:
-  delete `scripts/init-plugin.sh`, delete `scripts/templates/`, and remove `"init-plugin"` from `package.json` scripts.
-- [ ] Update the compatibility table for this plugin.
-- [ ] Update `src/definitions.ts` with the real public API and JSDoc.
-- [ ] Run `bun run docgen` and review generated API docs below.
-- [ ] Confirm examples in this file run against the real implementation.
-- [ ] Set GitHub repo description to start with `Capacitor plugin for ...`.
-- [ ] Set GitHub repo homepage to `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`.
-- [ ] Open docs/website PR and follow the complete website integration checklist in section **3) Open docs/website pull request**.
-- [ ] Run `bun run verify` before publishing.
-
-## Problem & Scope
-
-### Why this plugin exists
-
-`{{WHAT_PAIN_POINT_IT_SOLVES}}`
-
-## Capgo Links
-
-- **Plugin docs URL:** `https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/`
-- **Plugin tutorial URL:** `{{PLUGIN_TUTORIAL_URL}}`
-- **Website/docs repo:** `https://github.com/Cap-go/website`
-
-### What it does
-
-- `{{CAPABILITY_1}}`
-- `{{CAPABILITY_2}}`
-- `{{CAPABILITY_3}}`
-
-### What it does not do
-
-- `{{OUT_OF_SCOPE_1}}`
-- `{{OUT_OF_SCOPE_2}}`
+Use it before sensitive actions such as login, signup, checkout, password reset, or abuse-prone form submissions. The token must be sent to your backend and verified by creating a reCAPTCHA assessment.
 
 ## Compatibility
 
 | Plugin version | Capacitor compatibility | Maintained |
 | -------------- | ----------------------- | ---------- |
-| v8.\*.\*       | v8.\*.\*                | ✅          |
-| v7.\*.\*       | v7.\*.\*                | On demand   |
-| v6.\*.\*       | v6.\*.\*                | On demand   |
+| v8.*.*         | v8.*.*                  | Yes        |
+| v7.*.*         | v7.*.*                  | On demand  |
+| v6.*.*         | v6.*.*                  | No         |
+| v5.*.*         | v5.*.*                  | No         |
 
-Policy:
-
-- New plugins start at version `8.0.0` (Capacitor 8 baseline).
-- Backward compatibility for older Capacitor majors is supported on demand.
-
-## Quick Start (Template Authors)
-
-```bash
-bun install
-bun run init-plugin your-plugin YourPlugin app.capgo.yourplugin
-# Optional Kotlin Android variant:
-# bun run init-plugin your-plugin YourPlugin app.capgo.yourplugin Cap-go kotlin
-bun run verify
-```
-
-The `init-plugin` command updates package names, native class names, iOS/Android identifiers, and the local example app wiring.
-It accepts an optional fifth `android-lang` argument and defaults to `java`; pass `kotlin` to generate Kotlin Android sources and Gradle setup.
-To use Kotlin while keeping the default GitHub org, pass `Cap-go` as the 4th argument and `kotlin` as the 5th argument.
-
-After running `init-plugin` in your new plugin copy:
-
-```bash
-git remote set-url origin git@github.com:Cap-go/capacitor-your-plugin.git
-rm scripts/init-plugin.sh
-rm -rf scripts/templates
-```
-
-Then remove `"init-plugin"` from the `scripts` section in `package.json` before publishing.
-
-## Capacitor Hook Scripts (Recommended)
-
-For plugins that need automated setup during `cap sync` / `cap update`, define Capacitor lifecycle hooks in `package.json`.
-
-Example:
-
-```json
-{
-  "scripts": {
-    "generate:version-share": "bun run scripts/generate-version-share-data.mjs",
-    "configure:dependencies": "bun run scripts/configure-dependencies.mjs",
-    "capacitor:sync:before": "bun run generate:version-share",
-    "capacitor:update:before": "bun run generate:version-share",
-    "capacitor:sync:after": "bun run configure:dependencies"
-  }
-}
-```
-
-Guideline:
-- Use `*:before` for generated inputs needed by native sync/update.
-- Use `*:after` for native patching that depends on files created by sync/update.
-- Keep hook scripts idempotent.
-
-## Public Launch (Required)
-
-### 1) Publish in Capgo GitHub org as public
-
-```bash
-gh repo create Cap-go/capacitor-{{PLUGIN_SLUG}} --public --source=. --remote=origin --push
-```
-
-If the repo already exists and is private:
-
-```bash
-gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} --visibility public --accept-visibility-change-consequences
-```
-
-### 2) Set GitHub description and homepage
-
-Description must always start with: `Capacitor plugin for ...`
-
-```bash
-gh repo edit Cap-go/capacitor-{{PLUGIN_SLUG}} \
-  --description "Capacitor plugin for {{SHORT_USE_CASE}}." \
-  --homepage "https://capgo.app/docs/plugins/{{PLUGIN_SLUG}}/"
-```
-
-### 3) Open docs/website pull request
-
-Create a PR on `https://github.com/Cap-go/website` (or the local `landing/` folder in the monorepo) with all of the following:
-
-1. Add the plugin entry in `src/config/plugins.ts`.
-2. Add a plugin `LinkCard` in `src/content/docs/docs/plugins/index.mdx`.
-3. Create docs pages in `src/content/docs/docs/plugins/<plugin-doc-slug>/`:
-   `index.mdx`, `getting-started.mdx`, and optionally `ios.mdx` + `android.mdx` when platform setup differs.
-4. Update `astro.config.mjs`:
-   add `docs/plugins/<plugin-doc-slug>/**` in pagefind path buckets and add a sidebar section for the plugin pages.
-5. Add the SEO tutorial page in `src/content/plugins-tutorials/en/<plugin-repo-slug>.md`.
-6. Add icon asset `public/icons/plugins/<plugin-doc-slug>.svg` if the docs hero uses a plugin icon.
-7. Cross-link docs and tutorial pages.
-
-Slug mapping rules:
-
-- `<plugin-doc-slug>` is the docs route slug used under `/docs/plugins/<plugin-doc-slug>/`.
-- `<plugin-repo-slug>` is extracted from the GitHub repo URL in `src/config/plugins.ts` and is used by `/plugins/<slug>/`.
-- Example: repo `https://github.com/Cap-go/capacitor-app-attest/` requires tutorial file
-  `src/content/plugins-tutorials/en/capacitor-app-attest.md`.
-
-Starter snippets:
-
-`src/config/plugins.ts`
-
-```ts
-{
-  name: '@capgo/capacitor-{{PLUGIN_SLUG}}',
-  author: 'github.com/Cap-go',
-  description: 'Capacitor plugin for {{SHORT_USE_CASE}}',
-  href: 'https://github.com/Cap-go/capacitor-{{PLUGIN_SLUG}}/',
-  title: '{{PLUGIN_DISPLAY_NAME}}',
-  icon: ShieldCheckIcon,
-},
-```
-
-`astro.config.mjs` sidebar entry
-
-```ts
-{
-  label: '{{PLUGIN_DISPLAY_NAME}}',
-  items: [
-    { label: 'Overview', link: '/docs/plugins/<plugin-doc-slug>/' },
-    { label: 'Getting started', link: '/docs/plugins/<plugin-doc-slug>/getting-started' },
-    { label: 'iOS setup', link: '/docs/plugins/<plugin-doc-slug>/ios' },
-    { label: 'Android setup', link: '/docs/plugins/<plugin-doc-slug>/android' },
-  ],
-  collapsed: true,
-},
-```
-
-Required docs files:
-
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/index.mdx`
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/getting-started.mdx`
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/ios.mdx` (if iOS-specific setup exists)
-- `src/content/docs/docs/plugins/<plugin-doc-slug>/android.mdx` (if Android-specific setup exists)
-- `src/content/plugins-tutorials/en/<plugin-repo-slug>.md`
+The major version of this plugin follows the major version of Capacitor.
 
 ## Install
 
 ```bash
-bun add @capgo/capacitor-plugin-template
-bunx cap sync
+npm install @capgo/capacitor-recaptcha
+npx cap sync
 ```
 
-## Minimal Usage
+## Configuration
 
 ```typescript
-import { PluginTemplate } from '@capgo/capacitor-plugin-template';
+import type { CapacitorConfig } from '@capacitor/cli';
+import '@capgo/capacitor-recaptcha';
 
-const result = await PluginTemplate.echo({ value: 'Hello from Capgo' });
-console.log(result.value);
+const config: CapacitorConfig = {
+  appId: 'com.example.app',
+  appName: 'Example',
+  webDir: 'dist',
+  plugins: {
+    Recaptcha: {
+      androidSiteKey: 'ANDROID_SITE_KEY',
+      iosSiteKey: 'IOS_SITE_KEY',
+      webSiteKey: 'WEB_SITE_KEY',
+      enterprise: true,
+    },
+  },
+};
+
+export default config;
 ```
 
-## Integration Notes
+You can also pass `siteKey` directly to `load()` or `execute()` when the key is environment-specific.
 
-- **iOS:** `{{IOS_NOTES_OR_PERMISSIONS}}`
-- **Android:** `{{ANDROID_NOTES_OR_PERMISSIONS}}`
-- **Web:** `{{WEB_LIMITATIONS_OR_BEHAVIOR}}`
+## Usage
+
+```typescript
+import { Recaptcha } from '@capgo/capacitor-recaptcha';
+
+await Recaptcha.load();
+
+const { token } = await Recaptcha.execute({
+  action: 'login',
+});
+
+await fetch('/api/recaptcha-assessment', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ token, action: 'login' }),
+});
+```
+
+For non-Enterprise Web reCAPTCHA v3:
+
+```typescript
+const { token } = await Recaptcha.execute({
+  siteKey: 'WEB_V3_SITE_KEY',
+  enterprise: false,
+  action: 'signup',
+});
+```
+
+## Platform Setup
+
+### Android
+
+Create an Android mobile application key in Google Cloud reCAPTCHA and use it as `androidSiteKey` or `siteKey`.
+
+The plugin depends on:
+
+```gradle
+com.google.android.recaptcha:recaptcha:18.8.0
+```
+
+You can override the version from your app Gradle config with `recaptchaVersion`.
+
+### iOS
+
+Create an iOS mobile application key in Google Cloud reCAPTCHA and use it as `iosSiteKey` or `siteKey`.
+
+The plugin ships both Swift Package Manager and CocoaPods metadata and depends on Google's `RecaptchaEnterprise` iOS SDK.
+
+### Web
+
+Use a website key. Set `enterprise: true` for reCAPTCHA Enterprise or `enterprise: false` for regular reCAPTCHA v3.
+
+## Notes
+
+- Tokens are single-use and should be generated immediately before the protected backend request.
+- Validate every token on your backend by creating a reCAPTCHA assessment.
+- The old Cordova `sitekeyAndroid` and `sitekeyWeb` option names are accepted as migration aliases.
 
 ## Example App
 
-The `example-app/` folder is linked via `file:..` and is intended for validating native wiring during development.
+The `example-app/` folder links to the local plugin with `file:..`.
+
+```bash
+cd example-app
+npm install
+npm run start
+```
 
 ## API
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`load(...)`](#load)
+* [`execute(...)`](#execute)
 * [`getPluginVersion()`](#getpluginversion)
 * [Interfaces](#interfaces)
 
@@ -240,21 +142,44 @@ The `example-app/` folder is linked via `file:..` and is intended for validating
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-Base API used by the template plugin.
+reCAPTCHA plugin API.
 
-### echo(...)
+### load(...)
 
 ```typescript
-echo(options: EchoOptions) => Promise<EchoResult>
+load(options?: LoadOptions | undefined) => Promise<LoadResult>
 ```
 
-Echo a string to validate JS &lt;-&gt; native wiring.
+Load and cache the reCAPTCHA client for the current platform.
+
+`execute()` loads the client automatically when needed, so calling this method is optional.
 
 | Param         | Type                                                |
 | ------------- | --------------------------------------------------- |
-| **`options`** | <code><a href="#echooptions">EchoOptions</a></code> |
+| **`options`** | <code><a href="#loadoptions">LoadOptions</a></code> |
 
-**Returns:** <code>Promise&lt;<a href="#echoresult">EchoResult</a>&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#loadresult">LoadResult</a>&gt;</code>
+
+**Since:** 8.0.0
+
+--------------------
+
+
+### execute(...)
+
+```typescript
+execute(options: ExecuteOptions) => Promise<ExecuteResult>
+```
+
+Execute reCAPTCHA for an action and return a token for backend assessment.
+
+| Param         | Type                                                      |
+| ------------- | --------------------------------------------------------- |
+| **`options`** | <code><a href="#executeoptions">ExecuteOptions</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#executeresult">ExecuteResult</a>&gt;</code>
+
+**Since:** 8.0.0
 
 --------------------
 
@@ -269,36 +194,69 @@ Returns the platform implementation version marker.
 
 **Returns:** <code>Promise&lt;<a href="#pluginversionresult">PluginVersionResult</a>&gt;</code>
 
+**Since:** 8.0.0
+
 --------------------
 
 
 ### Interfaces
 
 
-#### EchoResult
+#### LoadResult
 
-Echo response payload.
+Result returned after the client is loaded.
 
-| Prop        | Type                | Description                      |
-| ----------- | ------------------- | -------------------------------- |
-| **`value`** | <code>string</code> | The same value passed to `echo`. |
+| Prop             | Type                                     | Description                            | Since |
+| ---------------- | ---------------------------------------- | -------------------------------------- | ----- |
+| **`loaded`**     | <code>boolean</code>                     | Whether the platform client is ready.  | 8.0.0 |
+| **`siteKey`**    | <code>string</code>                      | Site key used to load the client.      | 8.0.0 |
+| **`enterprise`** | <code>boolean</code>                     | Whether Enterprise mode was requested. | 8.0.0 |
+| **`platform`**   | <code>'web' \| 'ios' \| 'android'</code> | Platform that loaded the client.       | 8.0.0 |
 
 
-#### EchoOptions
+#### LoadOptions
 
-Input payload for the echo call.
+Options used to load the reCAPTCHA client.
 
-| Prop        | Type                | Description                                                           |
-| ----------- | ------------------- | --------------------------------------------------------------------- |
-| **`value`** | <code>string</code> | Arbitrary text that should be returned by native/web implementations. |
+| Prop                 | Type                 | Description                                                                                                  | Default           | Since |
+| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------- | ----- |
+| **`siteKey`**        | <code>string</code>  | Site key to use for this call. If omitted, the plugin reads the platform-specific key from Capacitor config. |                   | 8.0.0 |
+| **`androidSiteKey`** | <code>string</code>  | Android site key alias accepted for easier migration from older Cordova code.                                |                   | 8.0.0 |
+| **`iosSiteKey`**     | <code>string</code>  | iOS site key.                                                                                                |                   | 8.0.0 |
+| **`webSiteKey`**     | <code>string</code>  | Web site key.                                                                                                |                   | 8.0.0 |
+| **`enterprise`**     | <code>boolean</code> | Use the Enterprise web script (`enterprise.js`) when running on Web.                                         | <code>true</code> | 8.0.0 |
+| **`language`**       | <code>string</code>  | Optional language code for the Web reCAPTCHA script.                                                         |                   | 8.0.0 |
+
+
+#### ExecuteResult
+
+Result returned after executing a protected action.
+
+| Prop             | Type                                     | Description                                                                             | Since |
+| ---------------- | ---------------------------------------- | --------------------------------------------------------------------------------------- | ----- |
+| **`token`**      | <code>string</code>                      | Token generated by reCAPTCHA. Send this to your backend and create an assessment there. | 8.0.0 |
+| **`action`**     | <code>string</code>                      | Action name used to generate the token.                                                 | 8.0.0 |
+| **`siteKey`**    | <code>string</code>                      | Site key used to generate the token.                                                    | 8.0.0 |
+| **`enterprise`** | <code>boolean</code>                     | Whether Enterprise mode was requested.                                                  | 8.0.0 |
+| **`platform`**   | <code>'web' \| 'ios' \| 'android'</code> | Platform that generated the token.                                                      | 8.0.0 |
+
+
+#### ExecuteOptions
+
+Options used to execute a protected action.
+
+| Prop          | Type                | Description                                                                                                                                         | Since |
+| ------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| **`action`**  | <code>string</code> | Action name to protect. Use meaningful names such as `login`, `signup`, `checkout`, or `password_reset`.                                            | 8.0.0 |
+| **`timeout`** | <code>number</code> | Optional native execution timeout in milliseconds. Android and iOS enforce a minimum timeout of 5000ms when provided. This value is ignored on Web. | 8.0.0 |
 
 
 #### PluginVersionResult
 
 Plugin version payload.
 
-| Prop          | Type                | Description                                                 |
-| ------------- | ------------------- | ----------------------------------------------------------- |
-| **`version`** | <code>string</code> | Version identifier returned by the platform implementation. |
+| Prop          | Type                | Description                                                 | Since |
+| ------------- | ------------------- | ----------------------------------------------------------- | ----- |
+| **`version`** | <code>string</code> | Version identifier returned by the platform implementation. | 8.0.0 |
 
 </docgen-api>
