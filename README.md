@@ -100,7 +100,14 @@ The plugin depends on:
 com.google.android.recaptcha:recaptcha:18.8.0
 ```
 
+Google's Android reCAPTCHA SDK requires core library desugaring in the consuming app. The plugin enables it automatically during `npx cap sync android` and adds:
+
+```gradle
+com.android.tools:desugar_jdk_libs:2.1.5
+```
+
 You can override the version from your app Gradle config with `recaptchaVersion`.
+You can override the desugaring dependency with `desugarJdkLibsVersion`.
 
 ### iOS
 
