@@ -38,9 +38,39 @@ export interface RecaptchaPluginConfig {
   webSiteKey?: string;
 
   /**
-   * Use the Enterprise web script (`enterprise.js`) when running on Web.
+   * Legacy Cordova Android site key alias.
    *
-   * Android and iOS always use Google's mobile reCAPTCHA SDK.
+   * @since 8.1.1
+   */
+  sitekeyAndroid?: string;
+
+  /**
+   * Legacy-style iOS site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyIos?: string;
+
+  /**
+   * Legacy-style iOS site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyIOS?: string;
+
+  /**
+   * Legacy Cordova Web site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyWeb?: string;
+
+  /**
+   * Web mode switch.
+   *
+   * Web uses `enterprise.js` when true and regular reCAPTCHA v3 `api.js` when false.
+   * Android and iOS use Google's mobile reCAPTCHA SDK, which is Enterprise/mobile only.
+   * Passing `enterprise: false` on Android or iOS is rejected.
    *
    * @default true
    * @since 8.0.0
@@ -81,7 +111,7 @@ export interface LoadOptions {
   siteKey?: string;
 
   /**
-   * Android site key alias accepted for easier migration from older Cordova code.
+   * Android site key.
    *
    * @since 8.0.0
    */
@@ -102,7 +132,39 @@ export interface LoadOptions {
   webSiteKey?: string;
 
   /**
-   * Use the Enterprise web script (`enterprise.js`) when running on Web.
+   * Legacy Cordova Android site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyAndroid?: string;
+
+  /**
+   * Legacy-style iOS site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyIos?: string;
+
+  /**
+   * Legacy-style iOS site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyIOS?: string;
+
+  /**
+   * Legacy Cordova Web site key alias.
+   *
+   * @since 8.1.1
+   */
+  sitekeyWeb?: string;
+
+  /**
+   * Web mode switch.
+   *
+   * Web uses `enterprise.js` when true and regular reCAPTCHA v3 `api.js` when false.
+   * Android and iOS use Google's mobile reCAPTCHA SDK, which is Enterprise/mobile only.
+   * Passing `enterprise: false` on Android or iOS is rejected.
    *
    * @default true
    * @since 8.0.0

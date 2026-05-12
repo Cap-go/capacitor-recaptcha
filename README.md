@@ -13,7 +13,7 @@ It supports:
 
 - Web reCAPTCHA v3 with `api.js`
 - Web reCAPTCHA Enterprise with `enterprise.js`
-- Android and iOS mobile reCAPTCHA SDKs
+- Android and iOS reCAPTCHA Enterprise/mobile SDKs
 
 Use it before sensitive actions such as login, signup, checkout, password reset, or abuse-prone form submissions. The token must be sent to your backend and verified by creating a reCAPTCHA assessment.
 
@@ -78,7 +78,7 @@ await fetch('/api/recaptcha-assessment', {
 });
 ```
 
-For non-Enterprise Web reCAPTCHA v3:
+For regular Web reCAPTCHA v3:
 
 ```typescript
 const { token } = await Recaptcha.execute({
@@ -93,6 +93,8 @@ const { token } = await Recaptcha.execute({
 ### Android
 
 Create an Android mobile application key in Google Cloud reCAPTCHA and use it as `androidSiteKey` or `siteKey`.
+
+Android uses Google's mobile reCAPTCHA SDK. Regular, non-Enterprise reCAPTCHA v3 is only available on Web in this plugin; `enterprise: false` is rejected on Android.
 
 The plugin depends on:
 
@@ -113,6 +115,8 @@ You can override the desugaring dependency with `desugarJdkLibsVersion`.
 
 Create an iOS mobile application key in Google Cloud reCAPTCHA and use it as `iosSiteKey` or `siteKey`.
 
+iOS uses Google's `RecaptchaEnterprise` mobile SDK. Regular, non-Enterprise reCAPTCHA v3 is only available on Web in this plugin; `enterprise: false` is rejected on iOS.
+
 The plugin ships both Swift Package Manager and CocoaPods metadata and depends on Google's `RecaptchaEnterprise` iOS SDK.
 
 ### Web
@@ -123,7 +127,8 @@ Use a website key. Set `enterprise: true` for reCAPTCHA Enterprise or `enterpris
 
 - Tokens are single-use and should be generated immediately before the protected backend request.
 - Validate every token on your backend by creating a reCAPTCHA assessment.
-- The old Cordova `sitekeyAndroid` and `sitekeyWeb` option names are accepted as migration aliases.
+- The old Cordova `sitekeyAndroid` and `sitekeyWeb` option names are accepted as migration aliases in call options and Capacitor config.
+- `sitekeyIos` and `sitekeyIOS` are accepted as iOS migration aliases in call options and Capacitor config.
 
 ## Example App
 
@@ -225,14 +230,18 @@ Result returned after the client is loaded.
 
 Options used to load the reCAPTCHA client.
 
-| Prop                 | Type                 | Description                                                                                                  | Default           | Since |
-| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------- | ----- |
-| **`siteKey`**        | <code>string</code>  | Site key to use for this call. If omitted, the plugin reads the platform-specific key from Capacitor config. |                   | 8.0.0 |
-| **`androidSiteKey`** | <code>string</code>  | Android site key alias accepted for easier migration from older Cordova code.                                |                   | 8.0.0 |
-| **`iosSiteKey`**     | <code>string</code>  | iOS site key.                                                                                                |                   | 8.0.0 |
-| **`webSiteKey`**     | <code>string</code>  | Web site key.                                                                                                |                   | 8.0.0 |
-| **`enterprise`**     | <code>boolean</code> | Use the Enterprise web script (`enterprise.js`) when running on Web.                                         | <code>true</code> | 8.0.0 |
-| **`language`**       | <code>string</code>  | Optional language code for the Web reCAPTCHA script.                                                         |                   | 8.0.0 |
+| Prop                 | Type                 | Description                                                                                                                                                                                                                                      | Default           | Since |
+| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- | ----- |
+| **`siteKey`**        | <code>string</code>  | Site key to use for this call. If omitted, the plugin reads the platform-specific key from Capacitor config.                                                                                                                                     |                   | 8.0.0 |
+| **`androidSiteKey`** | <code>string</code>  | Android site key.                                                                                                                                                                                                                                |                   | 8.0.0 |
+| **`iosSiteKey`**     | <code>string</code>  | iOS site key.                                                                                                                                                                                                                                    |                   | 8.0.0 |
+| **`webSiteKey`**     | <code>string</code>  | Web site key.                                                                                                                                                                                                                                    |                   | 8.0.0 |
+| **`sitekeyAndroid`** | <code>string</code>  | Legacy Cordova Android site key alias.                                                                                                                                                                                                           |                   | 8.1.1 |
+| **`sitekeyIos`**     | <code>string</code>  | Legacy-style iOS site key alias.                                                                                                                                                                                                                 |                   | 8.1.1 |
+| **`sitekeyIOS`**     | <code>string</code>  | Legacy-style iOS site key alias.                                                                                                                                                                                                                 |                   | 8.1.1 |
+| **`sitekeyWeb`**     | <code>string</code>  | Legacy Cordova Web site key alias.                                                                                                                                                                                                               |                   | 8.1.1 |
+| **`enterprise`**     | <code>boolean</code> | Web mode switch. Web uses `enterprise.js` when true and regular reCAPTCHA v3 `api.js` when false. Android and iOS use Google's mobile reCAPTCHA SDK, which is Enterprise/mobile only. Passing `enterprise: false` on Android or iOS is rejected. | <code>true</code> | 8.0.0 |
+| **`language`**       | <code>string</code>  | Optional language code for the Web reCAPTCHA script.                                                                                                                                                                                             |                   | 8.0.0 |
 
 
 #### ExecuteResult

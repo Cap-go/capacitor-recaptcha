@@ -14,6 +14,11 @@ public class RecaptchaPlugin extends Plugin {
 
     @PluginMethod
     public void load(PluginCall call) {
+        if (isUnsupportedStandardMode(call)) {
+            rejectStandardNativeMode(call);
+            return;
+        }
+
         String siteKey = resolveSiteKey(call);
         if (isBlank(siteKey)) {
             call.reject("siteKey is required. Pass siteKey/androidSiteKey or set Recaptcha.androidSiteKey/siteKey in Capacitor config.");
@@ -39,6 +44,11 @@ public class RecaptchaPlugin extends Plugin {
 
     @PluginMethod
     public void execute(PluginCall call) {
+        if (isUnsupportedStandardMode(call)) {
+            rejectStandardNativeMode(call);
+            return;
+        }
+
         String siteKey = resolveSiteKey(call);
         if (isBlank(siteKey)) {
             call.reject("siteKey is required. Pass siteKey/androidSiteKey or set Recaptcha.androidSiteKey/siteKey in Capacitor config.");
@@ -109,7 +119,27 @@ public class RecaptchaPlugin extends Plugin {
             call.getString("siteKey"),
             call.getString("sitekeyAndroid"),
             getConfig().getString("androidSiteKey"),
-            getConfig().getString("siteKey")
+            getConfig().getString("siteKey"),
+            getConfig().getString("sitekeyAndroid")
+        );
+    }
+
+    private boolean isUnsupportedStandardMode(PluginCall call) {
+        return !resolveEnterprise(call);
+    }
+
+    private boolean resolveEnterprise(PluginCall call) {
+        Boolean callEnterprise = call.getBoolean("enterprise");
+        if (callEnterprise != null) {
+            return callEnterprise;
+        }
+        return getConfig().getBoolean("enterprise", true);
+    }
+
+    private void rejectStandardNativeMode(PluginCall call) {
+        call.reject(
+            "Regular reCAPTCHA v3 is only supported on Web. Android uses Google's mobile reCAPTCHA SDK, which requires an Enterprise/mobile site key.",
+            "UNSUPPORTED_MODE"
         );
     }
 

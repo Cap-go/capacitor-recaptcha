@@ -15,10 +15,6 @@ type RecaptchaExecutor = {
   execute: (siteKey: string, options: { action: string }) => Promise<string>;
 };
 
-type LegacyLoadOptions = LoadOptions & {
-  sitekeyWeb?: string;
-};
-
 declare global {
   interface Window {
     Capacitor?: {
@@ -79,13 +75,13 @@ export class RecaptchaWeb extends WebPlugin implements RecaptchaPlugin {
     options: LoadOptions,
   ): Required<Pick<LoadOptions, 'siteKey' | 'enterprise'>> & Pick<LoadOptions, 'language'> {
     const config = window.Capacitor?.config?.plugins?.Recaptcha ?? {};
-    const legacyOptions = options as LegacyLoadOptions;
     const siteKey = this.firstNonEmpty(
       options.webSiteKey,
       options.siteKey,
-      legacyOptions.sitekeyWeb,
+      options.sitekeyWeb,
       config.webSiteKey,
       config.siteKey,
+      config.sitekeyWeb,
     );
 
     if (!siteKey) {

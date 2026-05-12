@@ -15,6 +15,11 @@ public class RecaptchaPlugin: CAPPlugin, CAPBridgedPlugin {
     private let implementation = RecaptchaBridge()
 
     @objc func load(_ call: CAPPluginCall) {
+        guard resolveEnterprise(call) else {
+            rejectStandardNativeMode(call)
+            return
+        }
+
         guard let siteKey = resolveSiteKey(call) else {
             call.reject("siteKey is required. Pass siteKey/iosSiteKey or set Recaptcha.iosSiteKey/siteKey in Capacitor config.")
             return
@@ -31,6 +36,11 @@ public class RecaptchaPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func execute(_ call: CAPPluginCall) {
+        guard resolveEnterprise(call) else {
+            rejectStandardNativeMode(call)
+            return
+        }
+
         guard let siteKey = resolveSiteKey(call) else {
             call.reject("siteKey is required. Pass siteKey/iosSiteKey or set Recaptcha.iosSiteKey/siteKey in Capacitor config.")
             return
@@ -63,8 +73,23 @@ public class RecaptchaPlugin: CAPPlugin, CAPBridgedPlugin {
         firstNonEmpty(
             call.getString("iosSiteKey"),
             call.getString("siteKey"),
+            call.getString("sitekeyIos"),
+            call.getString("sitekeyIOS"),
             getConfig().getString("iosSiteKey"),
-            getConfig().getString("siteKey")
+            getConfig().getString("siteKey"),
+            getConfig().getString("sitekeyIos"),
+            getConfig().getString("sitekeyIOS")
+        )
+    }
+
+    private func resolveEnterprise(_ call: CAPPluginCall) -> Bool {
+        call.getBool("enterprise") ?? getConfig().getBoolean("enterprise", true)
+    }
+
+    private func rejectStandardNativeMode(_ call: CAPPluginCall) {
+        call.reject(
+            "Regular reCAPTCHA v3 is only supported on Web. iOS uses Google's mobile reCAPTCHA SDK, which requires an Enterprise/mobile site key.",
+            "UNSUPPORTED_MODE"
         )
     }
 
