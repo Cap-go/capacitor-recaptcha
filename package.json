@@ -14,7 +14,8 @@
     "ios/Tests",
     "Package.swift",
     "CapgoCapacitorRecaptcha.podspec",
-    "scripts/configure-android.js"
+    "scripts/configure-android.js",
+    "scripts/configure-ios-dsyms.js"
   ],
   "author": "Martin Donadieu <martin@capgo.app>",
   "license": "MPL-2.0",
@@ -34,8 +35,8 @@
     "captcha"
   ],
   "scripts": {
-    "capacitor:sync:after": "node scripts/configure-android.js",
-    "capacitor:update:after": "node scripts/configure-android.js",
+    "capacitor:sync:after": "node scripts/configure-android.js && node scripts/configure-ios-dsyms.js",
+    "capacitor:update:after": "node scripts/configure-android.js && node scripts/configure-ios-dsyms.js",
     "verify": "bun run verify:ios && bun run verify:android && bun run verify:web",
     "verify:ios": "xcodebuild -scheme CapgoCapacitorRecaptcha -destination generic/platform=iOS",
     "verify:android": "cd android && ./gradlew clean build test && cd ..",
