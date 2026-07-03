@@ -4,7 +4,7 @@ import pkg from './package.json';
 
 const config: CapacitorConfig = {
   appId: 'app.capgo.recaptcha.example',
-  appName: 'Recaptcha Example',
+  appName: '@capgo/capacitor-recaptcha',
   webDir: 'dist',
   plugins: {
     SplashScreen: {
