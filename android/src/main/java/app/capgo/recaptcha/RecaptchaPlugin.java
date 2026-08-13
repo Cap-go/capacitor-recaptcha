@@ -162,6 +162,10 @@ public class RecaptchaPlugin extends Plugin {
         if (!call.getData().has(key)) {
             return null;
         }
-        return call.getData().optLong(key);
+        Object value = call.getData().opt(key);
+        if (value == null || !(value instanceof Number)) {
+            return null;
+        }
+        return ((Number) value).longValue();
     }
 }
