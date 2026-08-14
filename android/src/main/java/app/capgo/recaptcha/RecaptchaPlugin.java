@@ -61,7 +61,7 @@ public class RecaptchaPlugin extends Plugin {
             return;
         }
 
-        Long timeout = call.getLong("timeout");
+        Long timeout = longOptionFromCall(call, "timeout");
 
         implementation.execute(
             getApplication(),
@@ -154,5 +154,18 @@ public class RecaptchaPlugin extends Plugin {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    // Capacitor's PluginCall.getLong() only reads Java Long values. JS numbers that
+    // fit in 32 bits cross the bridge as Integer, so optLong is required.
+    static Long longOptionFromCall(PluginCall call, String key) {
+        if (!call.getData().has(key)) {
+            return null;
+        }
+        Object value = call.getData().opt(key);
+        if (value == null || !(value instanceof Number)) {
+            return null;
+        }
+        return ((Number) value).longValue();
     }
 }
