@@ -210,6 +210,11 @@ function shellScript() {
     '    continue',
     '  fi',
     '',
+    '  if file "$binary" 2>/dev/null | grep -qi "ar archive"; then',
+    '    log "Skipping dsymutil for $framework because the binary is a static archive."',
+    '    continue',
+    '  fi',
+    '',
     '  if xcrun dsymutil "$binary" -o "$dsym_path" >/dev/null; then',
     '    log "Prepared $framework.framework.dSYM."',
     '    copy_to_archive "$dsym_path" "$framework"',
@@ -232,14 +237,6 @@ function phaseObject(phaseId) {
 \t\t\tinputFileListPaths = (
 \t\t\t);
 \t\t\tinputPaths = (
-\t\t\t\t"$(BUILD_DIR)",
-\t\t\t\t"$(BUILD_DIR)/../../../../../SourcePackages/artifacts",
-\t\t\t\t"$(BUILD_DIR)/../../SourcePackages/artifacts",
-\t\t\t\t"$(BUILD_DIR)/../SourcePackages/artifacts",
-\t\t\t\t"$(HOME)/Library/Developer/Xcode/DerivedData",
-\t\t\t\t"$(PODS_ROOT)",
-\t\t\t\t"$(PROJECT_DIR)",
-\t\t\t\t"$(SRCROOT)",
 \t\t\t);
 \t\t\tname = "${phaseName}";
 \t\t\toutputFileListPaths = (
