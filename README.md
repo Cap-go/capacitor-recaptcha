@@ -1,11 +1,28 @@
 # @capgo/capacitor-recaptcha
 
-<a href="https://capgo.app/"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-recaptcha" alt="Capgo - Instant updates for Capacitor" /></a>
+Protect sign-ups, logins and payments in your Capacitor app with reCAPTCHA tokens on web, Android and iOS, verified by your backend.
+
+<a href="https://capgo.app/?ref=plugin_recaptcha"><img src="https://capgo.app/readme-banner.svg?repo=Cap-go/capacitor-recaptcha" alt="Capgo - Instant updates for Capacitor" /></a>
 
 <div align="center">
-  <h2><a href="https://capgo.app/?ref=plugin_recaptcha"> ➡️ Get Instant updates for your App with Capgo</a></h2>
-  <h2><a href="https://capgo.app/consulting/?ref=plugin_recaptcha"> Missing a feature? We’ll build the plugin for you 💪</a></h2>
+  <p><b>Capgo</b>: open-source live updates for Ionic and Capacitor apps. Ship OTA fixes and features instantly, without waiting for app store review.</p>
+  <h2><a href="https://capgo.app/register/?ref=plugin_recaptcha">➡️ Get started for free</a></h2>
+  <p>14-day unlimited free trial. No credit card required</p>
+  <p><a href="https://capgo.app/consulting/?ref=plugin_recaptcha">Missing a feature? We'll build the plugin for you 💪</a></p>
 </div>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Cap-go/capacitor-recaptcha/main/assets/github-social-preview.png" alt="@capgo/capacitor-recaptcha for Capacitor apps" width="300" />
+</p>
+
+## Key features
+
+- **Load**: `load()` initializes and caches the reCAPTCHA client.
+- **Execute**: `execute()` returns a token for an action, ready for backend verification.
+- **Mobile**: reCAPTCHA Enterprise SDKs on Android and iOS.
+- **Web**: reCAPTCHA v3 with `api.js`, or reCAPTCHA Enterprise with `enterprise.js`.
+- **Per-platform keys**: platform site keys override the shared `siteKey`.
+- **Platforms**: iOS, Android and Web.
 
 Capacitor plugin for generating reCAPTCHA tokens on Web, Android, and iOS.
 
