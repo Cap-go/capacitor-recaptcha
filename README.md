@@ -21,7 +21,7 @@ Protect sign-ups, logins and payments in your Capacitor app with reCAPTCHA token
 - **Execute**: `execute()` returns a token for an action, ready for backend verification.
 - **Mobile**: reCAPTCHA Enterprise SDKs on Android and iOS.
 - **Web**: reCAPTCHA v3 with `api.js`, or reCAPTCHA Enterprise with `enterprise.js`.
-- **Per-platform keys**: platform site keys override the shared `siteKey`.
+- **Per-platform keys**: `androidSiteKey`, `iosSiteKey` and `webSiteKey` win over the shared `siteKey` set at the same level.
 - **Platforms**: iOS, Android and Web.
 
 Capacitor plugin for generating reCAPTCHA tokens on Web, Android, and iOS.
