@@ -139,10 +139,15 @@ export class RecaptchaWeb extends WebPlugin implements RecaptchaPlugin {
   }
 
   private async ready(enterprise: boolean): Promise<void> {
-    const executor = this.getExecutor(enterprise);
+    // The loader script only defines a `ready` stub: `execute` becomes available
+    // once the actual reCAPTCHA library, injected by the loader, has loaded.
+    const api = enterprise ? window.grecaptcha?.enterprise : window.grecaptcha;
+    if (!api?.ready) {
+      throw new Error('reCAPTCHA script loaded but the expected API is unavailable.');
+    }
 
     await new Promise<void>((resolve) => {
-      executor.ready(resolve);
+      api.ready(resolve);
     });
   }
 
