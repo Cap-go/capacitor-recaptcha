@@ -30,13 +30,16 @@ declare global {
   }
 }
 
+const RECAPTCHA_LOAD_TIMEOUT_MS = 10_000;
+
 export class RecaptchaWeb extends WebPlugin implements RecaptchaPlugin {
   private scriptPromises = new Map<string, Promise<void>>();
 
   async load(options: LoadOptions = {}): Promise<LoadResult> {
     const resolved = this.resolveOptions(options);
-    await this.loadScript(resolved.siteKey, resolved.enterprise, resolved.language);
-    await this.ready(resolved.enterprise);
+    const scriptKey = this.scriptKey(resolved.siteKey, resolved.enterprise, resolved.language);
+    await this.loadScript(scriptKey, resolved.siteKey, resolved.enterprise, resolved.language);
+    await this.ready(resolved.enterprise, scriptKey);
 
     return {
       loaded: true,
@@ -97,22 +100,54 @@ export class RecaptchaWeb extends WebPlugin implements RecaptchaPlugin {
     };
   }
 
-  private loadScript(siteKey: string, enterprise: boolean, language?: string): Promise<void> {
+  private scriptKey(siteKey: string, enterprise: boolean, language?: string): string {
+    const mode = enterprise ? 'enterprise' : 'standard';
+    return `${mode}:${siteKey}:${language ?? ''}`;
+  }
+
+  private cleanupScript(scriptKey: string): void {
+    this.scriptPromises.delete(scriptKey);
+    document.querySelector<HTMLScriptElement>(`script[data-capgo-recaptcha="${scriptKey}"]`)?.remove();
+  }
+
+  private recaptchaLoadTimeoutError(): Error {
+    return new Error('reCAPTCHA failed to load within 10s, check CSP, ad blockers or network');
+  }
+
+  private loadScript(scriptKey: string, siteKey: string, enterprise: boolean, language?: string): Promise<void> {
     if (typeof document === 'undefined') {
       return Promise.reject(new Error('reCAPTCHA can only be loaded in a browser context.'));
     }
 
-    const mode = enterprise ? 'enterprise' : 'standard';
-    const scriptKey = `${mode}:${siteKey}:${language ?? ''}`;
     const existingPromise = this.scriptPromises.get(scriptKey);
     if (existingPromise) {
       return existingPromise;
     }
 
     const promise = new Promise<void>((resolve, reject) => {
+      let settled = false;
+      const finish = (outcome: 'resolve' | 'reject', error?: Error) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        window.clearTimeout(timeoutId);
+        if (outcome === 'reject') {
+          this.cleanupScript(scriptKey);
+          reject(error ?? this.recaptchaLoadTimeoutError());
+          return;
+        }
+        resolve();
+      };
+
+      const timeoutId = window.setTimeout(
+        () => finish('reject', this.recaptchaLoadTimeoutError()),
+        RECAPTCHA_LOAD_TIMEOUT_MS,
+      );
+
       const existingScript = document.querySelector<HTMLScriptElement>(`script[data-capgo-recaptcha="${scriptKey}"]`);
       if (existingScript) {
-        resolve();
+        finish('resolve');
         return;
       }
 
@@ -129,8 +164,8 @@ export class RecaptchaWeb extends WebPlugin implements RecaptchaPlugin {
       script.defer = true;
       script.src = `${baseUrl}?${params.toString()}`;
       script.dataset.capgoRecaptcha = scriptKey;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Failed to load the reCAPTCHA script.'));
+      script.onload = () => finish('resolve');
+      script.onerror = () => finish('reject', new Error('Failed to load the reCAPTCHA script.'));
       document.head.appendChild(script);
     });
 
@@ -138,16 +173,25 @@ export class RecaptchaWeb extends WebPlugin implements RecaptchaPlugin {
     return promise;
   }
 
-  private async ready(enterprise: boolean): Promise<void> {
+  private async ready(enterprise: boolean, scriptKey: string): Promise<void> {
     // The loader script only defines a `ready` stub: `execute` becomes available
     // once the actual reCAPTCHA library, injected by the loader, has loaded.
     const api = enterprise ? window.grecaptcha?.enterprise : window.grecaptcha;
     if (!api?.ready) {
+      this.cleanupScript(scriptKey);
       throw new Error('reCAPTCHA script loaded but the expected API is unavailable.');
     }
 
-    await new Promise<void>((resolve) => {
-      api.ready(resolve);
+    await new Promise<void>((resolve, reject) => {
+      const timeoutId = window.setTimeout(() => {
+        this.cleanupScript(scriptKey);
+        reject(this.recaptchaLoadTimeoutError());
+      }, RECAPTCHA_LOAD_TIMEOUT_MS);
+
+      api.ready(() => {
+        window.clearTimeout(timeoutId);
+        resolve();
+      });
     });
   }
 
